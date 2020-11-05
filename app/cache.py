@@ -1,4 +1,5 @@
 from collections import defaultdict
+import threading
 
 from app.singletonmeta import SingletonMeta
 
@@ -26,3 +27,11 @@ class PictureCache(metaclass=SingletonMeta):
 
     def get_term(self, term):
         return self.search_index.get(term, [])
+
+    def rebuild_search_index(self, pictures, metadata):
+        _lock = threading.Lock()
+        with _lock:
+            self.pictures = pictures
+            self.metadata = metadata
+            self.build_search_index()
+
